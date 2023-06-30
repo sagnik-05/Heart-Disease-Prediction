@@ -9,7 +9,7 @@ import pickle
 import streamlit as st
 
 # loading the saved model 
-loaded_model = pickle.load(open('C:/Users/sagnik panda/Desktop/Heart-Disease-Prediction/heart_disease_model.sav', 'rb'))
+loaded_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 
 # function for prediction system
 
