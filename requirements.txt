@@ -1,0 +1,7 @@
+numpy
+Pandas
+pickle-mixin
+streamlit
+streamlit-option-menu
+scikit-learn
+protobuf
