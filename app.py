@@ -8,16 +8,9 @@ import numpy as np
 import pickle
 import streamlit as st
 
-# loading the saved model 
 loaded_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 
-# function for prediction system
-
 def heart_disease_prediction(input_data):
-    # age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,ca,thal,target
-    #input_data = (57,0,0,120,354,0,1,163,1,0.6,2,0,2)
-    #input_data = (63,0,0,108,269,0,1,169,1,1.8,1,2,2)
-
     # change the input into np array
     input_np_array = np.asarray(input_data)
     # reshape the np array as we are predicting for only one data point
@@ -27,9 +20,9 @@ def heart_disease_prediction(input_data):
     print(prediction)
 
     if(prediction[0] == 0):
-        return 'The person does not have heart disease'
+        return 'Congratulations! You do not have heart disease'
     else:
-        return 'The person has heart disease'
+        return 'You are having Heart Disease. Consult with a doctor immediately!'
     
     
 def main():
@@ -64,18 +57,19 @@ def main():
     col1, col2 = st.columns(2)
         
     with col1:
+            name = st.text_input('Enter your name here')
             age = st.number_input('Age', min_value=1, max_value=100, value=25)
             sex = st.selectbox('Sex', ['Male', 'Female'])
             cp = st.selectbox('Chest Pain Type', ['Typical Angina', 'Atypical Angina', 'Non-anginal Pain', 'Asymptomatic'])
             trestbps = st.number_input('Resting Blood Pressure', min_value=0, max_value=300, value=120)
             chol = st.number_input('Cholesterol Level', min_value=0, max_value=600, value=200)
             fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dl', ['True', 'False'])
+            
+        
+    with col2:
             restecg_mapping = {'Normal': 0, 'Abnormal': 1, 'Other': 2}
             restecg = st.selectbox('Resting ECG Results', list(restecg_mapping.keys()))
             restecg = restecg_mapping[restecg]
-        
-    with col2:
-            
             thalach = st.number_input('Maximum Heart Rate Achieved', min_value=0, max_value=300, value=150)
             exang = st.selectbox('Exercise Induced Angina', ['Yes', 'No'])
             oldpeak = st.number_input('ST Depression Induced by Exercise', min_value=0.0, max_value=10.0, value=0.0)
@@ -105,7 +99,7 @@ def main():
     st.markdown("---")
     if diagnosis:
         st.subheader('Diagnosis:')
-        if diagnosis.startswith('The person does not have heart disease'):
+        if diagnosis.startswith('Congratulations! You do not have heart disease'):
             st.success(diagnosis)
         else:
             st.error(diagnosis)
@@ -116,5 +110,7 @@ if __name__ == '__main__':
     
     
     
-    
+    # age,sex,cp,trestbps,chol,fbs,restecg,thalach,exang,oldpeak,slope,ca,thal,target
+    #input_data = (57,0,0,120,354,0,1,163,1,0.6,2,0,2)
+    #input_data = (63,0,0,108,269,0,1,169,1,1.8,1,2,2)
     
