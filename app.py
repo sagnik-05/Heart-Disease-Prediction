@@ -51,7 +51,6 @@ def main():
     st.markdown("---")
     # getting data from user
     st.write('Please provide the following information:')
-   
     
     
     col1, col2 = st.columns(2)
@@ -99,10 +98,7 @@ def main():
     st.markdown("---")
     if diagnosis:
         st.subheader('Diagnosis:')
-        if diagnosis.startswith('Congratulations! You do not have heart disease'):
-            st.success(diagnosis)
-        else:
-            st.error(diagnosis)
+        st.success(diagnosis)
             
 
 if __name__ == '__main__':
