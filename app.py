@@ -98,7 +98,10 @@ def main():
     st.markdown("---")
     if diagnosis:
         st.subheader('Diagnosis:')
-        st.success(diagnosis)
+        if diagnosis.startswith('Congratulations! You do not have heart disease'):
+            st.success(diagnosis)
+        else:
+            st.error(diagnosis)
             
 
 if __name__ == '__main__':
