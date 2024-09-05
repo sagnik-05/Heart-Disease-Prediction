@@ -3,6 +3,24 @@ import pickle
 import streamlit as st
 from datetime import datetime
 
+# Set page config to force light mode
+st.set_page_config(
+    page_title="Heart Disease Prediction App",
+    page_icon="❤️",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items=None
+)
+
+# Force light mode
+st.markdown("""
+    <style>
+        .stApp {
+            background-color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Loading the saved model
 loaded_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 
@@ -35,18 +53,13 @@ def display_heart_disease_animation():
     """, unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(
-        page_title="Heart Disease Prediction App",
-        page_icon="❤️",
-        layout="wide",
-    )
     current_time = datetime.now().strftime("%B %d, %Y")
     
     # Custom CSS
     st.markdown("""
     <style>
     .main {
-        background-color: #f5f5f5;
+        background-color: #ffffff;
     }
     .stApp {
         max-width: 1200px;
