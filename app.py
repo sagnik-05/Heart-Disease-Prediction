@@ -1,34 +1,47 @@
 import numpy as np
 import pickle
 import streamlit as st
-from streamlit_lottie import st_lottie
-import requests
+from datetime import datetime
 
-loaded_model = pickle.load(open(r'heart_disease_model.sav', 'rb'))
+# Loading the saved model
+loaded_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 
 def heart_disease_prediction(input_data):
     input_np_array = np.asarray(input_data)
     reshaped_data = input_np_array.reshape(1,-1)
     prediction = loaded_model.predict(reshaped_data)
     
-    if prediction[0] == 0:
-        return 'Congratulations! You do not have heart disease'
-    else:
-        return 'You may have heart disease. Please consult with a doctor immediately!'
+    return "No heart disease detected" if prediction[0] == 0 else "Heart disease detected"
 
-def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
+def get_user_name():
+    return st.text_input("Enter the Patient name")
+
+def display_heart_disease_animation():
+    st.markdown("""
+    <style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    .pulse {
+        animation: pulse 2s infinite;
+        display: inline-block;
+    }
+    </style>
+    <div style='text-align: center;'>
+        <h2 class='pulse' style='color: #FF5733;'>⚠️ Heart Disease Detected ⚠️</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(
-        page_title="Healthy Heart App",
+        page_title="Heart Disease Prediction App",
         page_icon="❤️",
         layout="wide",
     )
-
+    current_time = datetime.now().strftime("%B %d, %Y")
+    
     # Custom CSS
     st.markdown("""
     <style>
@@ -40,96 +53,90 @@ def main():
         margin: 0 auto;
     }
     .stButton>button {
-        color: #ffffff;
-        background-color: #ff4b4b;
+        background-color: #FF4B4B;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
         border-radius: 5px;
         border: none;
-        padding: 10px 24px;
-        font-size: 16px;
-        font-weight: bold;
     }
     .stButton>button:hover {
-        background-color: #ff7171;
-    }
-    .stSelectbox {
-        color: #333333;
-    }
-    .stNumberInput {
-        color: #333333;
-    }
-    h1 {
-        color: #ff4b4b;
-        font-size: 48px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    h2 {
-        color: #333333;
-        font-size: 24px;
-        margin-top: 30px;
-        margin-bottom: 20px;
+        background-color: #FF7171;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # Page title and description
-    st.title("Check Your Heart ❤️")
-    st.markdown("This app predicts the likelihood of heart disease based on your health information.")
+    # App header
+    st.title('Heart Disease Prediction Web App')
+    st.markdown('---')
 
-    # Load and display Lottie animation
-    lottie_heart = load_lottieurl("https://assets6.lottiefiles.com/packages/lf20_kbfzivr8.json")
-    st_lottie(lottie_heart, height=300, key="heart_animation")
-
-    st.header("Please provide the following information:")
-
+    # User input section
+    st.subheader("Patient Information")
     col1, col2 = st.columns(2)
-
+    
     with col1:
-        name = st.text_input('Enter your name', placeholder="John Doe")
+        user_name = get_user_name()
         age = st.number_input('Age', min_value=1, max_value=100, value=25)
         sex = st.selectbox('Sex', ['Male', 'Female'])
         cp = st.selectbox('Chest Pain Type', ['Typical Angina', 'Atypical Angina', 'Non-anginal Pain', 'Asymptomatic'])
-        trestbps = st.number_input('Resting Blood Pressure', min_value=0, max_value=300, value=120)
-        chol = st.number_input('Cholesterol Level', min_value=0, max_value=600, value=200)
-        fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dl', ['True', 'False'])
-
+        trestbps = st.number_input('Resting Blood Pressure (mm Hg)', min_value=0, max_value=300, value=120)
+        chol = st.number_input('Cholesterol Level (mg/dl)', min_value=0, max_value=600, value=200)
+        fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dl', ['False', 'True'])
+    
     with col2:
-        restecg_mapping = {'Normal': 0, 'Abnormal': 1, 'Other': 2}
-        restecg = st.selectbox('Resting ECG Results', list(restecg_mapping.keys()))
-        restecg = restecg_mapping[restecg]
+        restecg = st.selectbox('Resting ECG Results', ['Normal', 'ST-T Wave Abnormality', 'Left Ventricular Hypertrophy'])
         thalach = st.number_input('Maximum Heart Rate Achieved', min_value=0, max_value=300, value=150)
-        exang = st.selectbox('Exercise Induced Angina', ['Yes', 'No'])
+        exang = st.selectbox('Exercise Induced Angina', ['No', 'Yes'])
         oldpeak = st.number_input('ST Depression Induced by Exercise', min_value=0.0, max_value=10.0, value=0.0, format="%.1f")
         slope = st.selectbox('Slope of the Peak Exercise ST Segment', ['Upsloping', 'Flat', 'Downsloping'])
-        ca = st.selectbox('Number of Major Vessels Colored by Fluoroscopy', ['0', '1', '2', '3', '4'])
+        ca = st.selectbox('Number of Major Vessels Colored by Fluoroscopy', ['0', '1', '2', '3'])
         thal = st.selectbox('Thalassemia', ['Normal', 'Fixed Defect', 'Reversible Defect'])
 
+    st.markdown("---")
+
     # Convert user inputs
-    sex = 0 if sex == 'Male' else 1
+    sex = 1 if sex == 'Male' else 0
     cp_mapping = {'Typical Angina': 0, 'Atypical Angina': 1, 'Non-anginal Pain': 2, 'Asymptomatic': 3}
     cp = cp_mapping[cp]
     fbs = 1 if fbs == 'True' else 0
+    restecg_mapping = {'Normal': 0, 'ST-T Wave Abnormality': 1, 'Left Ventricular Hypertrophy': 2}
+    restecg = restecg_mapping[restecg]
     exang = 1 if exang == 'Yes' else 0
     slope_mapping = {'Upsloping': 0, 'Flat': 1, 'Downsloping': 2}
     slope = slope_mapping[slope]
     ca = int(ca)
-    thal_mapping = {'Normal': 0, 'Fixed Defect': 1, 'Reversible Defect': 2}
+    thal_mapping = {'Normal': 1, 'Fixed Defect': 2, 'Reversible Defect': 3}
     thal = thal_mapping[thal]
 
-    st.markdown("---")
-
-    if st.button('Get Heart Disease Prediction'):
+    # Prediction button
+    if st.button('Get Heart Disease Test Result'):
         diagnosis = heart_disease_prediction([age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal])
         
         st.subheader('Diagnosis:')
-        if diagnosis.startswith('Congratulations'):
-            st.success(diagnosis)
+        if diagnosis == "No heart disease detected":
+            st.success(f"Dear {user_name}, no heart disease detected.")
+            st.balloons()
+            st.markdown("### Stay healthy and take care! 💪😊👌")
         else:
-            st.error(diagnosis)
+            st.error(f"Dear {user_name}, heart disease detected.")
+            display_heart_disease_animation()
+            st.warning("### Please consult a cardiologist for proper evaluation and management. 🧑‍⚕️")
+        
+        # Display health tips
+        st.subheader("Heart Health Tips")
+        tips = [
+            "Maintain a heart-healthy diet rich in fruits, vegetables, whole grains, and lean proteins.",
+            "Exercise regularly, aiming for at least 150 minutes of moderate-intensity activity per week.",
+            "Manage stress through relaxation techniques like meditation or deep breathing exercises.",
+            "Quit smoking and limit alcohol consumption.",
+            "Monitor your blood pressure and cholesterol levels regularly."
+        ]
+        for tip in tips:
+            st.markdown(f"- {tip}")
 
-        st.markdown("---")
-        st.write("Remember, this is just a prediction. Always consult with a healthcare professional for accurate medical advice.")
+    # Footer
+    st.markdown("---")
+    st.markdown(f"Created by [Your Name] | Last updated: {current_time}")
 
 if __name__ == '__main__':
     main()
