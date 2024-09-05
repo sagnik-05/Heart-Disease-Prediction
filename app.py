@@ -4,7 +4,7 @@ import streamlit as st
 from streamlit_lottie import st_lottie
 import requests
 
-loaded_model = pickle.load(open(r'C:\Users\sagnik panda\Desktop\Heart-Disease-Prediction\heart_disease_model.sav', 'rb'))
+loaded_model = pickle.load(open(r'heart_disease_model.sav', 'rb'))
 
 def heart_disease_prediction(input_data):
     input_np_array = np.asarray(input_data)
