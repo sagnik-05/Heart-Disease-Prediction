@@ -3,7 +3,7 @@ import pickle
 import streamlit as st
 from datetime import datetime
 
-# Set page config to force light mode
+# Set page config
 st.set_page_config(
     page_title="Heart Disease Prediction App",
     page_icon="❤️",
@@ -12,12 +12,58 @@ st.set_page_config(
     menu_items=None
 )
 
-# Force light mode
+# Custom CSS for both light and dark mode
 st.markdown("""
     <style>
-        .stApp {
-            background-color: white;
+    :root {
+        --background-color: #f0f2f6;
+        --text-color: #262730;
+        --button-color: #ff4b4b;
+        --button-hover-color: #ff7171;
+        --success-color: #00cc66;
+        --error-color: #ff4b4b;
+        --warning-color: #ffa500;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    .stButton>button {
+        background-color: var(--button-color);
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+    }
+    .stButton>button:hover {
+        background-color: var(--button-hover-color);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --background-color: #0e1117;
+            --text-color: #fafafa;
+            --button-color: #ff4b4b;
+            --button-hover-color: #ff7171;
+            --success-color: #00cc66;
+            --error-color: #ff4b4b;
+            --warning-color: #ffa500;
         }
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+        display: inline-block;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -36,48 +82,13 @@ def get_user_name():
 
 def display_heart_disease_animation():
     st.markdown("""
-    <style>
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-    .pulse {
-        animation: pulse 2s infinite;
-        display: inline-block;
-    }
-    </style>
     <div style='text-align: center;'>
-        <h2 class='pulse' style='color: #FF5733;'>⚠️ Heart Disease Detected ⚠️</h2>
+        <h2 class='pulse' style='color: var(--error-color);'>⚠️ Heart Disease Detected ⚠️</h2>
     </div>
     """, unsafe_allow_html=True)
 
 def main():
     current_time = datetime.now().strftime("%B %d, %Y")
-    
-    # Custom CSS
-    st.markdown("""
-    <style>
-    .main {
-        background-color: #ffffff;
-    }
-    .stApp {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .stButton>button {
-        background-color: #FF4B4B;
-        color: white;
-        font-weight: bold;
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: none;
-    }
-    .stButton>button:hover {
-        background-color: #FF7171;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
     # App header
     st.title('Heart Disease Prediction Web App')
@@ -127,13 +138,13 @@ def main():
         
         st.subheader('Diagnosis:')
         if diagnosis == "No heart disease detected":
-            st.success(f"Dear {user_name}, no heart disease detected.")
+            st.markdown(f'<p style="color: var(--success-color);">Dear {user_name}, no heart disease detected.</p>', unsafe_allow_html=True)
             st.balloons()
             st.markdown("### Stay healthy and take care! 💪😊👌")
         else:
-            st.error(f"Dear {user_name}, heart disease detected.")
+            st.markdown(f'<p style="color: var(--error-color);">Dear {user_name}, heart disease detected.</p>', unsafe_allow_html=True)
             display_heart_disease_animation()
-            st.warning("### Please consult a cardiologist for proper evaluation and management. 🧑‍⚕️")
+            st.markdown('<p style="color: var(--warning-color);">### Please consult a cardiologist for proper evaluation and management. 🧑‍⚕️</p>', unsafe_allow_html=True)
         
         # Display health tips
         st.subheader("Heart Health Tips")
